@@ -122,14 +122,14 @@ function checkTaskStatus(taskId) {
 function pollTaskResult(taskId, onProgress) {
   return new Promise((resolve, reject) => {
     let attempts = 0
-    const maxAttempts = 30 // 最多轮询 30 次
+    const maxAttempts = 60  // 改成 60 次，因为有些识别需要较长时间
     const interval = 1000 // 每 1 秒检查一次
 
     const pollFn = async () => {
       attempts++
 
       if (attempts > maxAttempts) {
-        reject(new Error('识别超时，请重试'))
+        reject(new Error(`识别超时，请重试（轮询 ${attempts} 次后放弃）`))
         return
       }
 
@@ -155,7 +155,7 @@ function pollTaskResult(taskId, onProgress) {
         }
       } catch (err) {
         // 查询出错，继续轮询
-        console.warn('查询任务状态出错:', err.message)
+        console.warn('[轮询] 查询任务状态出错:', err.message)
         setTimeout(pollFn, interval)
       }
     }
