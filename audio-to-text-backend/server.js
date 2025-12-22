@@ -385,16 +385,24 @@ async function pollTaskResult(taskId, client) {
  * GET /api/audio-to-text/status/:taskId
  */
 app.get('/api/audio-to-text/status/:taskId', (req, res) => {
-  const taskId = req.params.taskId
+  // 关键修复：从 URL 参数获取的 taskId 是字符串，需要转换为数字
+  // 因为后端存储时用的是数字，否则 Map.get() 会找不到
+  const taskId = parseInt(req.params.taskId, 10)
+
+  console.log(`🔍 查询任务状态，TaskId: ${taskId}，类型: ${typeof taskId}`)
+  console.log(`📋 taskStore 中存储的所有 taskId:`, Array.from(taskStore.keys()))
+
   const taskData = taskStore.get(taskId)
 
   if (!taskData) {
+    console.log(`❌ 任务不存在: ${taskId}`)
     return res.status(404).json({
       code: 1,
       message: '任务不存在'
     })
   }
 
+  console.log(`✅ 找到任务，状态: ${taskData.status}`)
   res.json({
     code: 0,
     message: 'success',

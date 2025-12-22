@@ -161,9 +161,14 @@ Page({
 
       console.log('✅ 识别完成:', recognizedText)
 
+      // 处理识别结果：去掉时间戳，只保留文本部分
+      // 原格式：[0:0.000,0:1.800]  FRY.
+      // 处理后：FRY.
+      const cleanText = recognizedText.replace(/^\[\d+:\d+\.\d+,\d+:\d+\.\d+\]\s+/, '').trim()
+
       // 第3步：跳转到结果页面
       wx.navigateTo({
-        url: `/pages/result/result?text=${encodeURIComponent(recognizedText)}`
+        url: `/pages/result/result?text=${encodeURIComponent(cleanText)}`
       })
     } catch (error) {
       // 如果识别失败，显示错误提示

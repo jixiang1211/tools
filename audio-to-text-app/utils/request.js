@@ -122,7 +122,7 @@ function checkTaskStatus(taskId) {
 function pollTaskResult(taskId, onProgress) {
   return new Promise((resolve, reject) => {
     let attempts = 0
-    const maxAttempts = 60  // 改成 60 次，因为有些识别需要较长时间
+    const maxAttempts = 5  // 最多轮询 5 次
     const interval = 1000 // 每 1 秒检查一次
 
     const pollFn = async () => {
