@@ -1,0 +1,50 @@
+<view class="container">
+  <!-- 返回按钮 -->
+  <view class="header">
+    <button
+      class="btn-back"
+      open-type="navigateBack"
+    >
+      ← 返回
+    </button>
+  </view>
+
+  <!-- 标题 -->
+  <view class="title">
+    <text>识别结果</text>
+  </view>
+
+  <!-- 识别结果内容 -->
+  <view class="result-content">
+    <view class="result-text">
+      <text>{{recognizedText || '暂无结果'}}</text>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <!-- 复制按钮 -->
+    <button
+      class="btn btn-copy"
+      bindtap="copyText"
+    >
+      {{copied ? '✓ 已复制' : '📋 复制'}}
+    </button>
+
+    <!-- 分享按钮 -->
+    <button
+      class="btn btn-share"
+      open-type="share"
+    >
+      📤 分享给朋友
+    </button>
+  </view>
+
+  <!-- 返回首页按钮 -->
+  <button
+    class="btn btn-home"
+    bindtap="backToHome"
+  >
+    🔄 返回首页
+  </button>
+</view>

@@ -1,0 +1,63 @@
+<view class="container">
+  <!-- 标题 -->
+  <view class="title">
+    <text>语音转文字</text>
+  </view>
+
+  <!-- 录音显示区域 -->
+  <view class="recording-area">
+    <!-- 如果正在录音，显示录音状态 -->
+    <view wx:if="{{isRecording}}" class="recording-info">
+      <view class="recording-icon">🎙️</view>
+      <view class="recording-text">
+        <text>正在录音</text>
+      </view>
+      <view class="recording-time">
+        <text>{{recordingTime}}秒</text>
+      </view>
+    </view>
+
+    <!-- 如果没有录音，显示提示信息 -->
+    <view wx:else class="no-recording-info">
+      <view class="icon">🎤</view>
+      <text>点击下方按钮开始录音</text>
+    </view>
+  </view>
+
+  <!-- 按钮区域 -->
+  <view class="button-group">
+    <!-- 开始录音按钮 -->
+    <button
+      class="btn btn-start"
+      bindtap="startRecording"
+      disabled="{{isRecording}}"
+    >
+      开始录音
+    </button>
+
+    <!-- 停止录音按钮 -->
+    <button
+      class="btn btn-stop"
+      bindtap="stopRecording"
+      disabled="{{!isRecording}}"
+    >
+      停止录音
+    </button>
+  </view>
+
+  <!-- 识别按钮 -->
+  <button
+    class="btn btn-recognize"
+    bindtap="recognizeAudio"
+    disabled="{{!audioPath || isLoading}}"
+  >
+    {{isLoading ? '识别中...' : '识别文字'}}
+  </button>
+
+  <!-- 状态提示 -->
+  <view class="tip">
+    <text wx:if="{{audioPath && !isLoading}}">✓ 已录制，点击"识别文字"开始转换</text>
+    <text wx:elif="{{isLoading}}">⏳ 正在识别中，请稍候...</text>
+    <text wx:else>请先录制音频</text>
+  </view>
+</view>
