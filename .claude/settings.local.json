@@ -12,7 +12,10 @@
       "Bash(kill:*)",
       "Bash(lsof:*)",
       "Bash(xargs kill:*)",
-      "Bash(node test-asr.js:*)"
+      "Bash(node test-asr.js:*)",
+      "mcp__promptx__discover",
+      "WebSearch",
+      "Bash(tree:*)"
     ]
   }
 }
