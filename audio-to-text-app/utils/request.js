@@ -18,6 +18,8 @@ function uploadAudio(audioPath, retries = 2) {
     const doUpload = () => {
       attempts++
       console.log(`[上传] 第 ${attempts} 次尝试...`)
+      console.log(`[上传] 目标 URL: ${app.globalData.apiBaseUrl}/api/audio-to-text`)
+      console.log(`[上传] 音频文件: ${audioPath}`)
 
       wx.showLoading({
         title: attempts > 1 ? `上传中...(重试${attempts - 1}次)` : '上传中...',
@@ -36,6 +38,7 @@ function uploadAudio(audioPath, retries = 2) {
         success: (res) => {
           wx.hideLoading()
           console.log('[上传] 响应状态码:', res.statusCode)
+          console.log('[上传] 响应数据:', res.data)
 
           if (res.statusCode === 200) {
             try {
@@ -63,15 +66,20 @@ function uploadAudio(audioPath, retries = 2) {
         fail: (err) => {
           wx.hideLoading()
           console.error('[上传] 失败:', err)
+          console.error('[上传] 错误详情:', {
+            errMsg: err.errMsg,
+            statusCode: err.statusCode,
+            url: `${app.globalData.apiBaseUrl}/api/audio-to-text`
+          })
 
           // 检查是否是连接错误
-          if (err.errMsg.includes('ECONNRESET') || err.errMsg.includes('Connection')) {
+          if (err.errMsg.includes('ECONNRESET') || err.errMsg.includes('Connection') || err.errMsg.includes('fail')) {
             if (attempts < retries) {
               console.log(`[上传] 连接失败，${2000}ms 后重试...`)
               // 等待 2 秒后重试
               setTimeout(doUpload, 2000)
             } else {
-              reject(new Error(`上传失败 ${attempts} 次后放弃: ${err.errMsg}`))
+              reject(new Error(`网络连接失败，请检查：\n1. 后端服务器是否运行（PORT=9002）\n2. IP 地址是否正确：${app.globalData.apiBaseUrl}\n3. 手机是否与电脑在同一网络\n\n原始错误: ${err.errMsg}`))
             }
           } else {
             reject(err)

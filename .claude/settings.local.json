@@ -23,7 +23,8 @@
       "Bash(git add:*)",
       "Bash(git commit -m \"$\\(cat <<''EOF''\n添加翻译并朗读组合端点，修复TTS参数\n\n- 在 api-routes.js 中添加 POST /api/translate-and-speak 端点\n  实现文本翻译到粤语并转换为语音的完整流程\n  支持指定目标语言和语音类型（男/女）\n  \n- 修复 translation-service.js 中的 TTS 参数\n  移除不支持的参数：EmotionType、EmotionIntensity、Language\n  简化为核心参数：Text、SessionId、ModelType、SampleRate、Codec、VoiceType\n  \n- 更新 TODO.md\n  标记后端实现完成 \\(15/15\\)\n  发现 TTS 服务未开通的问题（需在腾讯云官网激活）\n  \n当前阻塞点：腾讯云 TTS 服务未激活\n状态：94% 完成 \\(29/31\\)\n\n🤖 Generated with Claude Code\n\nCo-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(python3:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(ipconfig:*)"
     ]
   }
 }

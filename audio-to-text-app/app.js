@@ -17,6 +17,8 @@ App({
 
   globalData: {
     // 全局变量（所有页面都可以访问）
-    apiBaseUrl: 'http://localhost:9002'
+    // 真机调试必须使用真实 IP，不能用 localhost
+    apiBaseUrl: 'http://192.168.2.8:9002'  // 真机调试使用此 IP
+    // 或者用 http://127.0.0.1:9002 在开发工具中本地测试
   }
 })
