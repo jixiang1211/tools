@@ -15,7 +15,8 @@
       "Bash(node test-asr.js:*)",
       "mcp__promptx__discover",
       "WebSearch",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(findstr:*)"
     ]
   }
 }

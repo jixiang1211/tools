@@ -164,8 +164,48 @@ function pollTaskResult(taskId, onProgress) {
   })
 }
 
+/**
+   * 翻译文本
+   * @param {string} text - 要翻译的文本
+   * @param {string} targetLang - 目标语言代码（默认：'zh-HK'）
+   * @returns {Promise<string>} 返回翻译后的文本
+   */
+  function translateText(text, targetLang = 'zh-HK') {
+    return new Promise((resolve, reject) => {
+      wx.request({
+        url: `${app.globalData.apiBaseUrl}/api/translate`,
+        method: 'POST',
+        header: {
+          'content-type': 'application/json'
+        },
+        data: {
+          text: text,
+          sourceLang: 'zh',
+          targetLang: targetLang
+        },
+        success: (res) => {
+          if (res.statusCode === 200) {
+            const data = res.data
+            if (data.code === 0) {
+              console.log('[翻译] 成功')
+              resolve(data.data.translatedText)
+            } else {
+              reject(new Error(data.message || '翻译失败'))
+            }
+          } else {
+            reject(new Error(`翻译失败: ${res.statusCode}`))
+          }
+        },
+        fail: (err) => {
+          console.error('[翻译] 网络请求失败:', err)
+          reject(new Error(`网络请求失败: ${err.errMsg}`))
+        }
+      })
+    })
+  }
 module.exports = {
-  uploadAudio,
-  checkTaskStatus,
-  pollTaskResult
-}
+    uploadAudio,
+    checkTaskStatus,
+    pollTaskResult,
+    translateText
+  }
