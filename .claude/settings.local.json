@@ -16,7 +16,11 @@
       "mcp__promptx__discover",
       "WebSearch",
       "Bash(tree:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(node:*)",
+      "Bash(Start-Sleep -Milliseconds 2000)",
+      "Bash(xxd:*)",
+      "Bash(git add:*)"
     ]
   }
 }

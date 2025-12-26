@@ -138,3 +138,129 @@
     font-size: 16px;
   }
 }
+
+/* 翻译按钮样式 */
+  .btn-translate {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin-top: 20rpx;
+  }
+
+  .btn-translate:active {
+    background: linear-gradient(135deg, #5568d3 0%, #63398a 100%);
+  }
+
+  /* 翻译结果显示框 */
+  .translation-box {
+    margin-top: 30rpx;
+    padding: 20rpx;
+    background-color: #f5f5f5;
+    border-radius: 12rpx;
+    border-left: 4rpx solid #667eea;
+  }
+
+  .translation-title {
+    font-size: 28rpx;
+    color: #667eea;
+    font-weight: bold;
+    margin-bottom: 15rpx;
+  }
+
+  .translation-text {
+    font-size: 32rpx;
+    color: #333;
+    line-height: 1.6;
+    word-break: break-all;
+    margin-bottom: 15rpx;
+  }
+
+  /* 朗读按钮样式 */
+  .btn-speak {
+    background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
+    margin-top: 20rpx;
+  }
+
+  .btn-speak:active {
+    background: linear-gradient(135deg, #FF5555 0%, #FF7D3D 100%);
+  }
+
+  .btn-speak:disabled {
+    background: linear-gradient(135deg, #CCCCCC 0%, #999999 100%);
+    opacity: 0.6;
+  }
+
+  /* 复制粤语按钮 */
+  .btn-copy-translated {
+    background-color: #2196F3;
+    margin-top: 10rpx;
+    padding: 12rpx 20rpx;
+    border-radius: 8rpx;
+    font-size: 14rpx;
+  }
+
+  .btn-copy-translated:active {
+    background-color: #0b7dda;
+  }
+
+  /* 音频播放指示器 */
+  .playing-indicator {
+    margin-top: 20rpx;
+    padding: 15rpx 20rpx;
+    background-color: rgba(255, 200, 100, 0.2);
+    border-left: 4rpx solid #FF6B6B;
+    border-radius: 8rpx;
+    text-align: center;
+  }
+
+  .playing-indicator text {
+    font-size: 14rpx;
+    color: #FF6B6B;
+    font-weight: bold;
+  }
+
+  /* 语音选择器 */
+  .voice-selector {
+    margin: 20rpx 0;
+    padding: 15rpx;
+    background-color: #ffffff;
+    border-radius: 8rpx;
+    border: 1rpx solid #e0e0e0;
+  }
+
+  .voice-title {
+    font-size: 26rpx;
+    color: #333;
+    font-weight: bold;
+    margin-bottom: 12rpx;
+  }
+
+  .radio-group {
+    display: flex;
+    gap: 25rpx;
+  }
+
+  .radio-label {
+    display: flex;
+    align-items: center;
+    gap: 8rpx;
+    font-size: 24rpx;
+  }
+
+  .radio-label text {
+    color: #333;
+  }
+
+  /* TTS 按钮样式 */
+  .btn-tts {
+    background: linear-gradient(135deg, #FF1493 0%, #FF69B4 100%);
+    margin-top: 15rpx;
+    margin-bottom: 10rpx;
+  }
+
+  .btn-tts:active {
+    background: linear-gradient(135deg, #DE1081 0%, #FF5DA0 100%);
+  }
+
+  .btn-tts:disabled {
+    background: linear-gradient(135deg, #CCCCCC 0%, #999999 100%);
+    opacity: 0.6;
+  }

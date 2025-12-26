@@ -17,6 +17,6 @@ App({
 
   globalData: {
     // 全局变量（所有页面都可以访问）
-    apiBaseUrl: 'http://localhost:9001'
+    apiBaseUrl: 'http://localhost:9002'
   }
 })

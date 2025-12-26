@@ -31,6 +31,52 @@
       {{copied ? '✓ 已复制' : '📋 复制'}}
     </button>
 
+<!-- 翻译按钮 -->
+  <button class="btn btn-translate" bindtap="translateText" disabled="{{translating}}">
+    {{translating ? '翻译中...' : (translatedText ? '✅ 已翻译' : '🌐 翻译')}}
+  </button>
+
+  <!-- 翻译按钮 -->
+  <button class="btn btn-speak" bindtap="translateToCantonese" disabled="{{translating}}">
+    {{translating ? '翻译中...' : (translatedText ? '✅ 已翻译' : '🌐 翻译成粤语')}}
+  </button>
+
+  <!-- 显示翻译结果 -->
+  <view wx:if="{{translatedText}}" class="translation-box">
+    <view class="translation-title">粤语版本：</view>
+    <view class="translation-text">{{translatedText}}</view>
+
+    <!-- 语音类型选择 -->
+    <view class="voice-selector">
+      <view class="voice-title">选择语音类型：</view>
+      <radio-group bindchange="selectVoiceType" class="radio-group">
+        <label class="radio-label">
+          <radio value="0" checked="{{selectedVoiceType === 0}}" />
+          <text>👩 女性</text>
+        </label>
+        <label class="radio-label">
+          <radio value="1" checked="{{selectedVoiceType === 1}}" />
+          <text>👨 男性</text>
+        </label>
+      </radio-group>
+    </view>
+
+    <!-- 文本转语音按钮 -->
+    <button
+      class="btn btn-tts"
+      bindtap="textToSpeechAndPlay"
+      disabled="{{speaking}}"
+    >
+      {{speaking ? '🔊 播放中...' : '🔊 朗读粤语'}}
+    </button>
+
+    <!-- 复制粤语按钮 -->
+    <button class="btn btn-copy-translated" bindtap="copyTranslatedText">
+      📋 复制粤语
+    </button>
+  </view>
+
+  
     <!-- 分享按钮 -->
     <button
       class="btn btn-share"

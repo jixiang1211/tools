@@ -170,42 +170,107 @@ function pollTaskResult(taskId, onProgress) {
    * @param {string} targetLang - 目标语言代码（默认：'zh-HK'）
    * @returns {Promise<string>} 返回翻译后的文本
    */
-  function translateText(text, targetLang = 'zh-HK') {
-    return new Promise((resolve, reject) => {
-      wx.request({
-        url: `${app.globalData.apiBaseUrl}/api/translate`,
-        method: 'POST',
-        header: {
-          'content-type': 'application/json'
-        },
-        data: {
-          text: text,
-          sourceLang: 'zh',
-          targetLang: targetLang
-        },
-        success: (res) => {
-          if (res.statusCode === 200) {
-            const data = res.data
-            if (data.code === 0) {
-              console.log('[翻译] 成功')
-              resolve(data.data.translatedText)
-            } else {
-              reject(new Error(data.message || '翻译失败'))
-            }
+/**
+ * 翻译文本
+ * @param {string} text - 要翻译的文本
+ * @param {string} targetLang - 目标语言代码（默认：'yue'，粤语）
+ * @returns {Promise<string>} 返回翻译后的文本
+ */
+function translateText(text, targetLang = 'yue') {
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${app.globalData.apiBaseUrl}/api/translate`,
+      method: 'POST',
+      header: {
+        'content-type': 'application/json'
+      },
+      data: {
+        text: text,
+        sourceLang: 'zh',
+        targetLang: targetLang
+      },
+      success: (res) => {
+        if (res.statusCode === 200) {
+          const data = res.data
+          if (data.code === 0) {
+            console.log('[翻译] 成功')
+            resolve(data.data.translatedText)
           } else {
-            reject(new Error(`翻译失败: ${res.statusCode}`))
+            reject(new Error(data.message || '翻译失败'))
           }
-        },
-        fail: (err) => {
-          console.error('[翻译] 网络请求失败:', err)
-          reject(new Error(`网络请求失败: ${err.errMsg}`))
+        } else {
+          reject(new Error(`翻译失败: ${res.statusCode}`))
         }
-      })
+      },
+      fail: (err) => {
+        console.error('[翻译] 网络请求失败:', err)
+        reject(new Error(`网络请求失败: ${err.errMsg}`))
+      }
     })
-  }
+  })
+}
+
+/**
+ * 文本转语音
+ * @param {string} text - 要转换的文本
+ * @param {number} voiceType - 语音类型（0=女性，1=男性）
+ * @returns {Promise<string>} 返回临时音频文件路径
+ */
+function textToSpeech(text, voiceType = 0) {
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${app.globalData.apiBaseUrl}/api/text-to-speech`,
+      method: 'POST',
+      header: {
+        'content-type': 'application/json'
+      },
+      data: {
+        text: text,
+        voiceType: voiceType
+      },
+      responseType: 'arraybuffer',
+      success: (res) => {
+        if (res.statusCode === 200) {
+          // 生成临时文件路径
+          const tempFilePath = `${wx.env.USER_DATA_PATH}/tts_${Date.now()}.wav`
+
+          // 使用 FileSystemManager 保存文件
+          const fs = wx.getFileSystemManager()
+          fs.writeFile({
+            filePath: tempFilePath,
+            data: res.data,  // arraybuffer
+            encoding: 'binary',
+            success: () => {
+              console.log(`[TTS] 文件保存成功 (${voiceType === 0 ? '女性' : '男性'})`)
+              resolve(tempFilePath)
+            },
+            fail: (err) => {
+              console.error('[TTS] 文件保存失败:', err)
+              reject(new Error(`TTS 文件保存失败: ${err.errMsg}`))
+            }
+          })
+        } else {
+          // 解析错误响应
+          try {
+            const errorData = JSON.parse(res.data)
+            reject(new Error(errorData.message || 'TTS 失败'))
+          } catch (e) {
+            reject(new Error(`TTS 失败: HTTP ${res.statusCode}`))
+          }
+        }
+      },
+      fail: (err) => {
+        console.error('[TTS] 网络请求失败:', err)
+        reject(new Error(`TTS 请求失败: ${err.errMsg}`))
+      }
+    })
+  })
+}
+
 module.exports = {
-    uploadAudio,
-    checkTaskStatus,
-    pollTaskResult,
-    translateText
-  }
+  uploadAudio,
+  checkTaskStatus,
+  pollTaskResult,
+  translateText,
+  textToSpeech
+}

@@ -459,6 +459,75 @@ app.post('/api/audio-to-text-mock', upload.single('audio'), (req, res) => {
 })
 
 /**
+ * 文本转语音端点 - POST /api/text-to-speech
+ * 支持男性和女性语音
+ */
+app.post('/api/text-to-speech', async (req, res) => {
+  try {
+    const translationService = require('./translation-service')
+
+    // 验证输入
+    const { text, voiceType = 0 } = req.body
+
+    if (!text || typeof text !== 'string') {
+      return res.status(400).json({
+        code: 1,
+        message: '请提供需要转换的文本'
+      })
+    }
+
+    if (text.length > 2000) {
+      return res.status(400).json({
+        code: 1,
+        message: '文本长度超过限制（最多2000字符）'
+      })
+    }
+
+    // 验证语音类型
+    if (typeof voiceType !== 'number' || (voiceType !== 0 && voiceType !== 1)) {
+      return res.status(400).json({
+        code: 1,
+        message: '语音类型无效，请使用 0（女性）或 1（男性）'
+      })
+    }
+
+    console.log('📥 TTS 请求:', {
+      textLength: text.length,
+      voiceType: voiceType === 0 ? '女性' : '男性'
+    })
+
+    // 调用 TTS 服务
+    const audioBuffer = await translationService.textToSpeech(text, voiceType)
+
+    // 返回音频文件
+    res.set({
+      'Content-Type': 'audio/wav',
+      'Content-Length': audioBuffer.length,
+      'Cache-Control': 'max-age=3600'
+    })
+
+    res.send(audioBuffer)
+
+  } catch (error) {
+    console.error('❌ TTS 失败:', error)
+
+    if (error.message.includes('凭证未配置') || error.message.includes('TENCENT_')) {
+      return res.status(500).json({
+        code: 1,
+        message: '服务器配置错误：腾讯云 API 密钥未配置',
+        details: '请在 .env 文件中配置 TENCENT_SECRET_ID 和 TENCENT_SECRET_KEY'
+      })
+    }
+
+    res.status(500).json({
+      code: 1,
+      message: 'TTS 转换失败',
+      error: error.message
+    })
+  }
+})
+
+/**
  * 404 处理
  */
 app.use((req, res) => {
