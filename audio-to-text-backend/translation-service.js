@@ -108,9 +108,14 @@ async function translateText(text, sourceLang = 'zh', targetLang = 'yue') {
  * 调用腾讯云 TTS API
  * @param {string} text - 要转换的文本
  * @param {number} voiceType - 语音类型（0=女性，1=男性）
+ * @param {number} primaryLanguage - 主语言类型（1=中文，2=英文，默认1）
  * @returns {Promise<Buffer>} 返回音频 Buffer
+ *
+ * 注意：腾讯云 TTS 不支持粤语（voiceLanguage=3）作为语言参数。
+ * 粤语音色需要通过 VoiceType 来选择。
+ * 具体的粤语音色 ID 请参考腾讯云音色列表。
  */
-async function textToSpeech(text, voiceType = 0) {
+async function textToSpeech(text, voiceType = 0, primaryLanguage = 1) {
   return new Promise((resolve, reject) => {
     try {
       const secretId = process.env.TENCENT_SECRET_ID
@@ -134,10 +139,11 @@ async function textToSpeech(text, voiceType = 0) {
       const payload = JSON.stringify({
         Text: text,
         SessionId: `tts_${Date.now()}_${Math.random().toString(36).substring(7)}`,
-        ModelType: 1,           // 通用模型
-        SampleRate: 16000,      // 16kHz
-        Codec: 'wav',           // WAV 格式
-        VoiceType: voiceType    // 语音类型（0=女性，1=男性）
+        ModelType: 1,                    // 通用模型
+        SampleRate: 16000,               // 16kHz
+        Codec: 'wav',                    // WAV 格式
+        VoiceType: voiceType,            // 音色 ID（具体值需查询腾讯云文档）
+        PrimaryLanguage: primaryLanguage // 主语言（1=中文，2=英文）
       })
 
       // 签名 (TC3 算法)

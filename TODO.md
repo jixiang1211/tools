@@ -1,8 +1,8 @@
 # 项目 TODO 清单
 
 **项目**: 音频转文字小程序（带粤语翻译和朗读功能）
-**最后更新**: 2025-12-26
-**当前状态**: 🔄 进行中 - 正在测试翻译并朗读功能
+**最后更新**: 2025-12-26 晚上
+**当前状态**: 🔴 阻塞中 - 等待确认腾讯云粤语音色 ID
 
 ---
 
@@ -75,21 +75,65 @@
 
 ---
 
+## ✅ 最近完成任务
+
+### 修复 TTS API 参数问题 (2025-12-26 - 进行中)
+
+#### 第一阶段：错误的参数名 ❌
+- [x] **初始诊断**
+  - 问题: API 返回 "The parameter `VoiceLanguage` is not recognized"
+  - 原因: 使用了错误的参数名 `VoiceLanguage`
+
+- [x] **根本原因分析**
+  - ✅ 腾讯云 TTS API 正确参数名是 `PrimaryLanguage`（不是 VoiceLanguage）
+  - ✅ `PrimaryLanguage` 只支持：1=中文，2=英文
+  - ✅ **腾讯云不支持粤语作为 PrimaryLanguage 参数值**
+
+- [x] **代码修正**
+  - ✅ 修改 translation-service.js：`voiceLanguage` → `primaryLanguage`
+  - ✅ 修改 api-routes.js：更新参数接收和传递逻辑
+  - ✅ 修改 request.js（前端）：更新函数签名和文档
+  - ✅ 重启后端服务器：新代码已生效
+  - ✅ API 调用成功：HTTP 200，音频正常生成（43KB）
+
+#### 第二阶段：粤语音色 ID 问题 🔴 待解决
+- [ ] **确认粤语音色 ID**
+  - 问题: 粤语需要通过 VoiceType（音色 ID）来实现，不能通过语言参数
+  - 当前状态: 使用 VoiceType=0（默认音色，可能是中文）
+  - 需要做: 查询腾讯云音色列表，找出粤语音色的 VoiceType ID 值
+  - 资源: https://cloud.tencent.com/document/product/1073/92668 (腾讯云音色列表)
+
+---
+
 ## ⏳ 待完成任务
+
+### 🔴 阻塞任务 - 需要用户确认
+
+#### **确认腾讯云粤语音色 ID** (优先级: 高)
+- [ ] **查询腾讯云控制台或文档**
+  - 登录腾讯云账户 → TTS 服务 → 查看可用音色列表
+  - 找出粤语音色对应的 VoiceType ID 值（可能是 4、5、6、7 等）
+  - 记录下粤语女性音色和男性音色的 ID
+
+- [ ] **或者通过测试找到粤语音色**
+  - 运行脚本：`D:/projects/tools-1/test-voicetype-cantonese.sh`
+  - 这会测试 VoiceType=0 到 17 的不同音色
+  - 生成的音频文件在 `/tmp/test-voice-*.wav`
+  - 逐一播放，找出哪个是粤语音色
 
 ### 高优先级 🔴
 
-- [ ] **完成 TTS 测试**
-  - 验证粤语朗读质量
-  - 测试音频播放是否正常
-  - 检查音量是否足够
-  - 预计工作量: 30 分钟
+- [ ] **更新代码使用粤语音色**
+  - 一旦确认粤语音色 ID，更新：
+    - `api-routes.js` `/api/translate-and-speak` 端点
+    - 根据 language='yue' 自动选择粤语音色的 VoiceType
+    - 例如：`voiceTypeForCantonese = 5` (假设5是粤语)
+  - 重新测试整个端到端流程
 
-- [ ] **错误场景测试**
-  - 网络断开时的处理
-  - API 超时的处理
-  - 长文本的处理 (2000+ 字符)
-  - 预计工作量: 1 小时
+- [ ] **验证粤语朗读效果**
+  - 使用正确的粤语音色后进行测试
+  - 确保播放的确实是粤语语音（不是中文）
+  - 测试男性/女性两种音色
 
 ### 中优先级 🟡
 
@@ -131,6 +175,56 @@
   - 配置性能监控
   - 建立用户反馈渠道
   - 预计工作量: 2 小时
+
+---
+
+## 🔧 当前进度详细说明
+
+### 修改的文件清单（2025-12-26）
+
+| 文件 | 修改内容 | 状态 |
+|-----|--------|------|
+| `translation-service.js` | textToSpeech() 参数：voiceLanguage → primaryLanguage | ✅ 完成 |
+| `api-routes.js` | /api/text-to-speech 端点参数更新 | ✅ 完成 |
+| `api-routes.js` | /api/translate-and-speak 端点参数更新 | ✅ 完成 |
+| `request.js` | textToSpeech() 函数签名更新 | ✅ 完成 |
+| `request.js` | translateAndSpeak() 函数文档更新 | ✅ 完成 |
+
+### 核心发现
+
+**腾讯云 TTS API 限制:**
+```
+PrimaryLanguage 参数值：
+- 1 = 中文（默认）
+- 2 = 英文
+- ❌ 没有粤语！
+```
+
+**解决方案:**
+粤语需要通过 **VoiceType（音色 ID）** 来实现，不同的 VoiceType ID 对应不同的：
+- 语言（中文、英文、粤语等）
+- 性别（男性、女性）
+- 风格（新闻、故事等）
+
+### 下次继续的步骤
+
+1. **获取粤语音色 ID**
+   - 查询腾讯云文档或控制台
+   - 或运行测试脚本找出粤语音色
+
+2. **更新 api-routes.js**
+   - 在 `/api/translate-and-speak` 端点添加逻辑
+   - 当 language='yue' 时，使用粤语音色的 VoiceType ID
+
+3. **测试验证**
+   - 确保播放的是粤语语音
+   - 测试男性/女性两种音色
+
+### 创建的文档文件
+
+- `FIX_SUMMARY_TTS_CANTONESE.md` - 详细的修复分析
+- `CANTONESE_VOICETYPE_FIX.md` - 粤语音色问题分析
+- `test-voicetype-cantonese.sh` - 粤语音色批量测试脚本
 
 ---
 

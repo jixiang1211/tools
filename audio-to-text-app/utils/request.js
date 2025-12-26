@@ -221,10 +221,14 @@ function translateText(text, targetLang = 'yue') {
 /**
  * 文本转语音
  * @param {string} text - 要转换的文本
- * @param {number} voiceType - 语音类型（0=女性，1=男性）
+ * @param {number} voiceType - 音色 ID（具体值需查询腾讯云文档）
+ * @param {number} primaryLanguage - 主语言（1=中文，2=英文，默认1）
  * @returns {Promise<string>} 返回临时音频文件路径
+ *
+ * 注意：腾讯云 TTS 不支持粤语作为语言参数。
+ * 粤语需要通过选择粤语音色的 voiceType 来实现。
  */
-function textToSpeech(text, voiceType = 0) {
+function textToSpeech(text, voiceType = 0, primaryLanguage = 1) {
   return new Promise((resolve, reject) => {
     wx.request({
       url: `${app.globalData.apiBaseUrl}/api/text-to-speech`,
@@ -234,7 +238,8 @@ function textToSpeech(text, voiceType = 0) {
       },
       data: {
         text: text,
-        voiceType: voiceType
+        voiceType: voiceType,
+        primaryLanguage: primaryLanguage  // 主语言
       },
       responseType: 'arraybuffer',
       success: (res) => {
@@ -279,8 +284,14 @@ function textToSpeech(text, voiceType = 0) {
  * 翻译并朗读（组合端点）
  * @param {string} text - 要处理的文本
  * @param {string} language - 目标语言（默认：'yue'，粤语）
- * @param {number} voiceType - 语音类型（0=女性，1=男性，默认：0）
+ * @param {number} voiceType - 音色 ID（具体值需查询腾讯云文档）
  * @returns {Promise<string>} 返回临时音频文件路径
+ *
+ * 流程：
+ * 1. 翻译：中文 → 粤语 (使用 DeepSeek API)
+ * 2. 转语音：粤语文本 → 语音 (使用腾讯云 TTS，使用中文基础参数)
+ *
+ * 注意：腾讯云 TTS 不支持粤语作为语言参数，只能通过 VoiceType 选择粤语音色。
  */
 function translateAndSpeak(text, language = 'yue', voiceType = 0) {
   return new Promise((resolve, reject) => {
@@ -292,7 +303,7 @@ function translateAndSpeak(text, language = 'yue', voiceType = 0) {
       },
       data: {
         text: text,
-        language: language,
+        language: language,  // 'yue' = 粤语（后端会使用 voiceLanguage=3）
         voiceType: voiceType
       },
       responseType: 'arraybuffer',

@@ -118,8 +118,12 @@ router.post('/api/translate', async (req, res) => {
  * 请求体：
  * {
  *   "text": "你好世界",
- *   "voiceType": 0          // 可选，默认 0（女性）。0=女性，1=男性
+ *   "voiceType": 0,             // 可选，默认 0。音色 ID（具体值见腾讯云文档）
+ *   "primaryLanguage": 1        // 可选，默认 1（中文）。1=中文，2=英文
  * }
+ *
+ * 注意：腾讯云 TTS 不支持粤语作为 PrimaryLanguage 参数值。
+ * 粤语需要通过选择粤语音色的 VoiceType 来实现。
  *
  * 响应：
  * - 成功: 返回 WAV 格式音频文件（二进制）
@@ -134,7 +138,7 @@ router.post('/api/translate', async (req, res) => {
 router.post('/api/text-to-speech', async (req, res) => {
   try {
     // 验证输入
-    const { text, voiceType = 0 } = req.body
+    const { text, voiceType = 0, primaryLanguage = 1 } = req.body
 
     if (!text || typeof text !== 'string') {
       return res.status(400).json({
@@ -160,11 +164,12 @@ router.post('/api/text-to-speech', async (req, res) => {
 
     console.log('📥 TTS 请求:', {
       textLength: text.length,
-      voiceType: voiceType === 0 ? '女性' : '男性'
+      voiceType: voiceType,
+      primaryLanguage: primaryLanguage === 1 ? '中文' : primaryLanguage === 2 ? '英文' : '未知'
     })
 
     // 调用 TTS 服务
-    const audioBuffer = await translationService.textToSpeech(text, voiceType)
+    const audioBuffer = await translationService.textToSpeech(text, voiceType, primaryLanguage)
 
     // 返回音频文件
     res.set({
@@ -252,8 +257,12 @@ router.post('/api/translate-and-speak', async (req, res) => {
     console.log('✅ 翻译完成:', translatedText)
 
     // Step 2: 将翻译结果转换为语音
+    // 注意：腾讯云 TTS 不支持粤语作为 primaryLanguage 参数。
+    // 粤语需要通过选择粤语音色的 VoiceType 来实现。
+    // 这里先用中文（primaryLanguage=1）进行转换
     console.log('🔄 Step 2: 文本转语音...')
-    const audioBuffer = await translationService.textToSpeech(translatedText, voiceType)
+    const primaryLanguage = 1  // 使用中文（腾讯云不支持粤语参数）
+    const audioBuffer = await translationService.textToSpeech(translatedText, voiceType, primaryLanguage)
     console.log('✅ TTS 完成，音频大小:', audioBuffer.length, '字节')
 
     // 返回音频文件

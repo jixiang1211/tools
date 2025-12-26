@@ -1,0 +1,123 @@
+========================================
+TTS 粤语语音修复 - 会话状态
+========================================
+
+日期: 2025-12-26
+状态: 🔴 进行中 - 等待粤语音色 ID 确认
+
+========================================
+已修改的代码文件
+========================================
+
+1. audio-to-text-backend/translation-service.js
+   ✅ 修改: 参数名 voiceLanguage → primaryLanguage
+   行号: 114, 139-146
+
+2. audio-to-text-backend/api-routes.js
+   ✅ 修改: /api/text-to-speech 端点
+   ✅ 修改: /api/translate-and-speak 端点
+   行号: 114-172, 256-266
+
+3. audio-to-text-app/utils/request.js
+   ✅ 修改: textToSpeech() 函数签名
+   ✅ 修改: translateAndSpeak() 函数文档
+   行号: 221-242, 283-295
+
+========================================
+创建的新文档
+========================================
+
+✅ QUICK_REFERENCE.md - 快速参考指南
+✅ FIX_SUMMARY_TTS_CANTONESE.md - 详细修复分析
+✅ CANTONESE_VOICETYPE_FIX.md - 粤语音色问题分析
+✅ SESSION_SUMMARY_20251226.md - 会话总结
+✅ RESTORE_CHECKLIST.md - 恢复工作检查清单
+✅ SESSION_STATUS.txt - 本文件
+
+========================================
+创建的测试脚本
+========================================
+
+✅ test-voicetype-cantonese.sh - 批量测试 VoiceType
+✅ test-voicetype-param.sh - 参数测试脚本
+✅ test-tts-cantonese.ps1 - PowerShell 测试脚本
+
+========================================
+核心发现
+========================================
+
+问题: 播放中文语音而不是粤语
+原因: 腾讯云 TTS API 不支持粤语作为语言参数
+
+关键约束:
+  ❌ VoiceLanguage 参数不存在
+  ✅ 正确参数名: PrimaryLanguage
+  ❌ PrimaryLanguage 只支持: 1=中文，2=英文
+  ❌ 粤语没有语言参数值
+
+解决方案:
+  粤语需要通过 VoiceType（音色 ID）来实现
+  需要确认粤语对应的 VoiceType ID 值
+
+========================================
+当前进度
+========================================
+
+✅ API 参数名已更正
+✅ 所有代码已修改
+✅ 后端服务器已重启
+✅ API 调用成功（HTTP 200）
+✅ 音频文件正常生成
+
+🔴 阻塞: 需要粤语 VoiceType ID
+
+========================================
+下次继续步骤
+========================================
+
+1. 查询腾讯云文档或运行测试脚本
+   找出粤语对应的 VoiceType ID（可能是 4-11）
+
+2. 更新 api-routes.js 约第 264 行
+   const cantonese_voicetype = X  // 替换 X
+
+3. 重启后端服务器
+
+4. 测试验证粤语音频
+
+5. 更新 TODO.md 标记完成
+
+========================================
+后端服务器状态
+========================================
+
+启动命令:
+  cd D:/projects/tools-1/audio-to-text-backend
+  PORT=9002 node server-v2.js
+
+端口: 9002
+状态: ✅ 运行中（如果已启动）
+
+API 测试:
+  curl -X POST http://127.0.0.1:9002/api/translate-and-speak \
+    -H "Content-Type: application/json" \
+    -d '{"text": "今天天气怎么样", "language": "yue"}'
+
+========================================
+关键资源
+========================================
+
+快速参考: QUICK_REFERENCE.md
+详细指南: SESSION_SUMMARY_20251226.md
+恢复清单: RESTORE_CHECKLIST.md
+腾讯云音色列表: https://cloud.tencent.com/document/product/1073/92668
+
+========================================
+预计完成时间
+========================================
+
+一旦确认粤语音色 ID: 30 分钟
+
+========================================
+End of Session Status
+========================================
