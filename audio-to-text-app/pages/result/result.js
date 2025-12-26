@@ -295,14 +295,14 @@
           })
         })
 
-        this.audioContext.play()
-          .then(() => {
-            console.log('✅ 音频播放命令已发送')
-          })
-          .catch((err) => {
-            console.error('❌ 播放命令失败:', err)
-            this.setData({ speaking: false })
-          })
+        // 调用 play() 方法（不返回 Promise）
+        try {
+          this.audioContext.play()
+          console.log('✅ 音频播放命令已发送')
+        } catch (err) {
+          console.error('❌ 播放命令失败:', err)
+          this.setData({ speaking: false })
+        }
 
       } catch (error) {
         console.error('❌ TTS 转换失败:', error)
@@ -387,14 +387,14 @@
           })
         })
 
-        this.audioContext.play()
-          .then(() => {
-            console.log('✅ 音频播放命令已发送')
-          })
-          .catch((err) => {
-            console.error('❌ 播放命令失败:', err)
-            this.setData({ speaking: false })
-          })
+        // 调用 play() 方法（不返回 Promise）
+        try {
+          this.audioContext.play()
+          console.log('✅ 音频播放命令已发送')
+        } catch (err) {
+          console.error('❌ 播放命令失败:', err)
+          this.setData({ speaking: false })
+        }
 
       } catch (error) {
         console.error('❌ 翻译并朗读失败:', error)
