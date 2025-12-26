@@ -264,3 +264,19 @@
     background: linear-gradient(135deg, #CCCCCC 0%, #999999 100%);
     opacity: 0.6;
   }
+
+  /* 翻译并朗读按钮样式 */
+  .btn-translate-speak {
+    background: linear-gradient(135deg, #00C853 0%, #64DD17 100%);
+    margin-top: 15rpx;
+    margin-bottom: 10rpx;
+  }
+
+  .btn-translate-speak:active {
+    background: linear-gradient(135deg, #009624 0%, #558B2F 100%);
+  }
+
+  .btn-translate-speak:disabled {
+    background: linear-gradient(135deg, #CCCCCC 0%, #999999 100%);
+    opacity: 0.6;
+  }

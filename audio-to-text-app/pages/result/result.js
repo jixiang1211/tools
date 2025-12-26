@@ -291,5 +291,64 @@
           console.log('⏹️ 已停止播放')
         }
       })
+    },
+
+    /**
+     * 翻译并朗读（一步完成）
+     */
+    async translateAndSpeak() {
+      if (this.data.speaking) {
+        this.stopAudio()
+        return
+      }
+
+      try {
+        this.setData({ speaking: true })
+
+        console.log(`🎙️ 开始翻译并朗读 (${this.data.selectedVoiceType === 0 ? '女性' : '男性'})...`)
+
+        // 调用组合服务（翻译 + TTS）
+        const audioPath = await request.translateAndSpeak(
+          this.data.recognizedText,
+          'yue',  // 粤语
+          this.data.selectedVoiceType
+        )
+
+        console.log(`✅ 翻译并朗读成功，开始播放...`)
+
+        // 保存音频路径
+        this.setData({
+          currentAudioPath: audioPath
+        })
+
+        // 播放音频
+        wx.playVoice({
+          filePath: audioPath,
+          success: () => {
+            console.log('✅ 音频播放成功')
+            this.setData({ speaking: false })
+          },
+          fail: (err) => {
+            console.error('❌ 音频播放失败:', err)
+            this.setData({ speaking: false })
+
+            wx.showToast({
+              title: '播放失败',
+              icon: 'error'
+            })
+          }
+        })
+
+      } catch (error) {
+        console.error('❌ 翻译并朗读失败:', error)
+        this.setData({ speaking: false })
+
+        wx.showModal({
+          title: '翻译并朗读失败',
+          content: error.message || '服务暂时不可用，请稍后重试',
+          showCancel: false,
+          confirmText: '知道了'
+        })
+      }
     }
   })

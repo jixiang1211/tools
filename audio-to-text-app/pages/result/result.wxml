@@ -41,6 +41,11 @@
     {{translating ? '翻译中...' : (translatedText ? '✅ 已翻译' : '🌐 翻译成粤语')}}
   </button>
 
+  <!-- 翻译并朗读按钮（一步完成） -->
+  <button class="btn btn-translate-speak" bindtap="translateAndSpeak" disabled="{{speaking}}">
+    {{speaking ? '🎙️ 朗读中...' : '🎙️ 翻译并朗读'}}
+  </button>
+
   <!-- 显示翻译结果 -->
   <view wx:if="{{translatedText}}" class="translation-box">
     <view class="translation-title">粤语版本：</view>

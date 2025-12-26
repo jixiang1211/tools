@@ -267,10 +267,70 @@ function textToSpeech(text, voiceType = 0) {
   })
 }
 
+/**
+ * 翻译并朗读（组合端点）
+ * @param {string} text - 要处理的文本
+ * @param {string} language - 目标语言（默认：'yue'，粤语）
+ * @param {number} voiceType - 语音类型（0=女性，1=男性，默认：0）
+ * @returns {Promise<string>} 返回临时音频文件路径
+ */
+function translateAndSpeak(text, language = 'yue', voiceType = 0) {
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${app.globalData.apiBaseUrl}/api/translate-and-speak`,
+      method: 'POST',
+      header: {
+        'content-type': 'application/json'
+      },
+      data: {
+        text: text,
+        language: language,
+        voiceType: voiceType
+      },
+      responseType: 'arraybuffer',
+      success: (res) => {
+        if (res.statusCode === 200) {
+          // 生成临时文件路径
+          const tempFilePath = `${wx.env.USER_DATA_PATH}/translate_speak_${Date.now()}.wav`
+
+          // 使用 FileSystemManager 保存文件
+          const fs = wx.getFileSystemManager()
+          fs.writeFile({
+            filePath: tempFilePath,
+            data: res.data,  // arraybuffer
+            encoding: 'binary',
+            success: () => {
+              console.log(`[翻译朗读] 文件保存成功`)
+              resolve(tempFilePath)
+            },
+            fail: (err) => {
+              console.error('[翻译朗读] 文件保存失败:', err)
+              reject(new Error(`翻译朗读文件保存失败: ${err.errMsg}`))
+            }
+          })
+        } else {
+          // 解析错误响应
+          try {
+            const errorData = JSON.parse(res.data)
+            reject(new Error(errorData.message || '翻译朗读失败'))
+          } catch (e) {
+            reject(new Error(`翻译朗读失败: HTTP ${res.statusCode}`))
+          }
+        }
+      },
+      fail: (err) => {
+        console.error('[翻译朗读] 网络请求失败:', err)
+        reject(new Error(`翻译朗读请求失败: ${err.errMsg}`))
+      }
+    })
+  })
+}
+
 module.exports = {
   uploadAudio,
   checkTaskStatus,
   pollTaskResult,
   translateText,
-  textToSpeech
+  textToSpeech,
+  translateAndSpeak
 }
