@@ -20,12 +20,26 @@
       currentAudioPath: ''          // 当前音频文件路径
     },
 
+    // 音频上下文（用于播放音频）
+    audioContext: null,
+
     onLoad(options) {
       if (options.text) {
         const decodedText = decodeURIComponent(options.text)
         this.setData({
           recognizedText: decodedText
         })
+      }
+
+      // 初始化音频上下文
+      this.audioContext = wx.createInnerAudioContext()
+      console.log('✅ 音频上下文已初始化')
+    },
+
+    onUnload() {
+      // 页面卸载时销毁音频上下文
+      if (this.audioContext) {
+        this.audioContext.destroy()
       }
     },
 
@@ -250,23 +264,45 @@
           currentAudioPath: audioPath
         })
 
-        // 播放音频
-        wx.playVoice({
-          filePath: audioPath,
-          success: () => {
-            console.log('✅ 音频播放成功')
-            this.setData({ speaking: false })
-          },
-          fail: (err) => {
-            console.error('❌ 音频播放失败:', err)
-            this.setData({ speaking: false })
+        // 使用 InnerAudioContext 播放音频（推荐方式）
+        console.log(`🔊 准备播放音频: ${audioPath}`)
 
-            wx.showToast({
-              title: '播放失败',
-              icon: 'error'
-            })
-          }
+        this.audioContext.src = audioPath
+        this.audioContext.volume = 1.0  // 设置音量为最大
+
+        this.audioContext.onPlay(() => {
+          console.log('✅ 音频开始播放')
         })
+
+        this.audioContext.onEnded(() => {
+          console.log('✅ 音频播放完成')
+          this.setData({ speaking: false })
+        })
+
+        this.audioContext.onError((err) => {
+          console.error('❌ 音频播放失败:', {
+            errCode: err.errCode,
+            errMsg: err.errMsg,
+            filePath: audioPath
+          })
+          this.setData({ speaking: false })
+
+          wx.showModal({
+            title: '播放失败',
+            content: `错误: ${err.errMsg}\n文件: ${audioPath}`,
+            showCancel: false,
+            confirmText: '知道了'
+          })
+        })
+
+        this.audioContext.play()
+          .then(() => {
+            console.log('✅ 音频播放命令已发送')
+          })
+          .catch((err) => {
+            console.error('❌ 播放命令失败:', err)
+            this.setData({ speaking: false })
+          })
 
       } catch (error) {
         console.error('❌ TTS 转换失败:', error)
@@ -285,12 +321,11 @@
      * 停止音频播放
      */
     stopAudio() {
-      wx.stopVoice({
-        success: () => {
-          this.setData({ speaking: false })
-          console.log('⏹️ 已停止播放')
-        }
-      })
+      if (this.audioContext) {
+        this.audioContext.stop()
+        this.setData({ speaking: false })
+        console.log('⏹️ 已停止播放')
+      }
     },
 
     /**
@@ -321,23 +356,45 @@
           currentAudioPath: audioPath
         })
 
-        // 播放音频
-        wx.playVoice({
-          filePath: audioPath,
-          success: () => {
-            console.log('✅ 音频播放成功')
-            this.setData({ speaking: false })
-          },
-          fail: (err) => {
-            console.error('❌ 音频播放失败:', err)
-            this.setData({ speaking: false })
+        // 使用 InnerAudioContext 播放音频（推荐方式）
+        console.log(`🔊 准备播放音频: ${audioPath}`)
 
-            wx.showToast({
-              title: '播放失败',
-              icon: 'error'
-            })
-          }
+        this.audioContext.src = audioPath
+        this.audioContext.volume = 1.0  // 设置音量为最大
+
+        this.audioContext.onPlay(() => {
+          console.log('✅ 音频开始播放')
         })
+
+        this.audioContext.onEnded(() => {
+          console.log('✅ 音频播放完成')
+          this.setData({ speaking: false })
+        })
+
+        this.audioContext.onError((err) => {
+          console.error('❌ 音频播放失败:', {
+            errCode: err.errCode,
+            errMsg: err.errMsg,
+            filePath: audioPath
+          })
+          this.setData({ speaking: false })
+
+          wx.showModal({
+            title: '播放失败',
+            content: `错误: ${err.errMsg}\n文件: ${audioPath}`,
+            showCancel: false,
+            confirmText: '知道了'
+          })
+        })
+
+        this.audioContext.play()
+          .then(() => {
+            console.log('✅ 音频播放命令已发送')
+          })
+          .catch((err) => {
+            console.error('❌ 播放命令失败:', err)
+            this.setData({ speaking: false })
+          })
 
       } catch (error) {
         console.error('❌ 翻译并朗读失败:', error)
