@@ -50,6 +50,9 @@
       wx.setClipboardData({
         data: this.data.recognizedText,
         success: () => {
+          // 触觉反馈 - 复制成功
+          wx.vibrateShort({ type: 'light' })
+
           this.setData({ copied: true })
 
           wx.showToast({
@@ -82,12 +85,21 @@
       try {
         this.setData({ translating: true })
 
+        // 显示加载动画
+        wx.showLoading({
+          title: '翻译中...',
+          mask: true
+        })
+
         console.log('🔄 开始翻译...')
 
         const translatedText = await request.translateText(
           this.data.recognizedText,
           'zh-HK'
         )
+
+        // 隐藏加载动画
+        wx.hideLoading()
 
         console.log('✅ 翻译成功:', translatedText)
 
@@ -103,6 +115,9 @@
         })
 
       } catch (error) {
+        // 隐藏加载动画
+        wx.hideLoading()
+
         console.error('❌ 翻译失败:', error)
         this.setData({ translating: false })
 
@@ -146,6 +161,12 @@
       try {
         this.setData({ translating: true })
 
+        // 显示加载动画
+        wx.showLoading({
+          title: '翻译中...',
+          mask: true
+        })
+
         console.log('🌐 开始翻译...')
 
         const translatedText = await request.translateText(
@@ -153,7 +174,13 @@
           'yue'  // 粤语
         )
 
+        // 隐藏加载动画
+        wx.hideLoading()
+
         console.log('✅ 翻译成功:', translatedText)
+
+        // 触觉反馈 - 翻译成功
+        wx.vibrateShort({ type: 'light' })
 
         this.setData({
           translatedText: translatedText,
@@ -167,6 +194,9 @@
         })
 
       } catch (error) {
+        // 隐藏加载动画
+        wx.hideLoading()
+
         console.error('❌ 翻译失败:', error)
         this.setData({ translating: false })
 
@@ -194,6 +224,9 @@
       wx.setClipboardData({
         data: this.data.translatedText,
         success: () => {
+          // 触觉反馈 - 复制成功
+          wx.vibrateShort({ type: 'light' })
+
           wx.showToast({
             title: '已复制粤语文本',
             icon: 'success',
@@ -258,6 +291,9 @@
         )
 
         console.log(`✅ 语音转换成功，开始播放...`)
+
+        // 触觉反馈 - TTS 转换成功
+        wx.vibrateShort({ type: 'light' })
 
         // 保存音频路径
         this.setData({
@@ -340,6 +376,12 @@
       try {
         this.setData({ speaking: true })
 
+        // 显示加载动画
+        wx.showLoading({
+          title: '翻译并朗读中...',
+          mask: true
+        })
+
         console.log(`🎙️ 开始翻译并朗读 (${this.data.selectedVoiceType === 0 ? '女性' : '男性'})...`)
 
         // 调用组合服务（翻译 + TTS）
@@ -349,7 +391,13 @@
           this.data.selectedVoiceType
         )
 
+        // 隐藏加载动画
+        wx.hideLoading()
+
         console.log(`✅ 翻译并朗读成功，开始播放...`)
+
+        // 触觉反馈 - 翻译并朗读成功
+        wx.vibrateShort({ type: 'light' })
 
         // 保存音频路径
         this.setData({
@@ -397,6 +445,9 @@
         }
 
       } catch (error) {
+        // 隐藏加载动画
+        wx.hideLoading()
+
         console.error('❌ 翻译并朗读失败:', error)
         this.setData({ speaking: false })
 

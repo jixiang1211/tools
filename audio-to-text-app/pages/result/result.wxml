@@ -1,101 +1,94 @@
-<view class="container">
-  <!-- 返回按钮 -->
+<view class="container gradient-bg-primary">
+  <!-- 顶部导航栏 -->
   <view class="header">
-    <button
-      class="btn-back"
-      open-type="navigateBack"
-    >
+    <button class="btn-back" open-type="navigateBack">
       ← 返回
     </button>
+    <text class="header-title">识别结果</text>
+    <view style="width: 60rpx;"></view>
   </view>
 
-  <!-- 标题 -->
-  <view class="title">
-    <text>识别结果</text>
-  </view>
+  <!-- 页面内容 -->
+  <scroll-view class="scroll-view" scroll-y>
+    <!-- 第一层：识别结果卡片 -->
+    <view class="card-section">
+      <view class="card card-lg">
+        <view class="section-label">普通话文本</view>
+        <view class="result-text">
+          <text>{{recognizedText || '暂无结果'}}</text>
+        </view>
 
-  <!-- 识别结果内容 -->
-  <view class="result-content">
-    <view class="result-text">
-      <text>{{recognizedText || '暂无结果'}}</text>
-    </view>
-  </view>
-
-  <!-- 操作按钮 -->
-  <view class="action-buttons">
-    <!-- 复制按钮 -->
-    <button
-      class="btn btn-copy"
-      bindtap="copyText"
-    >
-      {{copied ? '✓ 已复制' : '📋 复制'}}
-    </button>
-
-<!-- 翻译按钮 -->
-  <button class="btn btn-translate" bindtap="translateText" disabled="{{translating}}">
-    {{translating ? '翻译中...' : (translatedText ? '✅ 已翻译' : '🌐 翻译')}}
-  </button>
-
-  <!-- 翻译按钮 -->
-  <button class="btn btn-speak" bindtap="translateToCantonese" disabled="{{translating}}">
-    {{translating ? '翻译中...' : (translatedText ? '✅ 已翻译' : '🌐 翻译成粤语')}}
-  </button>
-
-  <!-- 翻译并朗读按钮（一步完成） -->
-  <button class="btn btn-translate-speak" bindtap="translateAndSpeak" disabled="{{speaking}}">
-    {{speaking ? '🎙️ 朗读中...' : '🎙️ 翻译并朗读'}}
-  </button>
-
-  <!-- 显示翻译结果 -->
-  <view wx:if="{{translatedText}}" class="translation-box">
-    <view class="translation-title">粤语版本：</view>
-    <view class="translation-text">{{translatedText}}</view>
-
-    <!-- 语音类型选择 -->
-    <view class="voice-selector">
-      <view class="voice-title">选择语音类型：</view>
-      <radio-group bindchange="selectVoiceType" class="radio-group">
-        <label class="radio-label">
-          <radio value="0" checked="{{selectedVoiceType === 0}}" />
-          <text>👩 女性</text>
-        </label>
-        <label class="radio-label">
-          <radio value="1" checked="{{selectedVoiceType === 1}}" />
-          <text>👨 男性</text>
-        </label>
-      </radio-group>
+        <!-- 快速操作按钮 -->
+        <view class="quick-actions">
+          <button class="btn btn-icon" bindtap="copyText">
+            <text class="icon">📋</text>
+            <text class="label">{{copied ? '已复制' : '复制'}}</text>
+          </button>
+          <button class="btn btn-icon" open-type="share">
+            <text class="icon">📤</text>
+            <text class="label">分享</text>
+          </button>
+        </view>
+      </view>
     </view>
 
-    <!-- 文本转语音按钮 -->
-    <button
-      class="btn btn-tts"
-      bindtap="textToSpeechAndPlay"
-      disabled="{{speaking}}"
-    >
-      {{speaking ? '🔊 播放中...' : '🔊 朗读粤语'}}
-    </button>
+    <!-- 第二层：翻译和朗读卡片 -->
+    <view class="card-section mt-md">
+      <!-- 翻译并朗读 - 主要操作 -->
+      <button
+        class="btn btn-translate-speak btn-primary"
+        bindtap="translateAndSpeak"
+        disabled="{{speaking}}"
+      >
+        <text>{{speaking ? '🎙️ 朗读中...' : '翻译并朗读粤语'}}</text>
+      </button>
 
-    <!-- 复制粤语按钮 -->
-    <button class="btn btn-copy-translated" bindtap="copyTranslatedText">
-      📋 复制粤语
-    </button>
+      <!-- 粤语翻译卡片 -->
+      <view wx:if="{{translatedText}}" class="card card-lg mt-md">
+        <view class="section-label">粤语版本</view>
+        <view class="translation-text">{{translatedText}}</view>
+
+        <!-- 语音类型选择器 -->
+        <view class="voice-selector">
+          <view class="voice-label">语音：</view>
+          <radio-group bindchange="selectVoiceType" class="voice-options">
+            <label class="voice-option {{selectedVoiceType === 0 ? 'active' : ''}}">
+              <radio value="0" checked="{{selectedVoiceType === 0}}" />
+              <text>女性</text>
+            </label>
+            <label class="voice-option {{selectedVoiceType === 1 ? 'active' : ''}}">
+              <radio value="1" checked="{{selectedVoiceType === 1}}" />
+              <text>男性</text>
+            </label>
+          </radio-group>
+        </view>
+
+        <!-- 朗读控制按钮 -->
+        <view class="tts-actions">
+          <button
+            class="btn btn-secondary"
+            bindtap="textToSpeechAndPlay"
+            disabled="{{speaking}}"
+          >
+            {{speaking ? '播放中...' : '朗读粤语'}}
+          </button>
+          <button
+            class="btn btn-secondary"
+            bindtap="copyTranslatedText"
+          >
+            复制粤语
+          </button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 间距占位 -->
+    <view style="height: 60rpx;"></view>
+  </scroll-view>
+
+  <!-- 加载状态指示 -->
+  <view class="loading-overlay" wx:if="{{speaking || translating}}">
+    <view class="loader-spinner"></view>
+    <text class="loader-text">{{speaking ? '朗读中...' : '翻译中...'}}</text>
   </view>
-
-  
-    <!-- 分享按钮 -->
-    <button
-      class="btn btn-share"
-      open-type="share"
-    >
-      📤 分享给朋友
-    </button>
-  </view>
-
-  <!-- 返回首页按钮 -->
-  <button
-    class="btn btn-home"
-    bindtap="backToHome"
-  >
-    🔄 返回首页
-  </button>
 </view>

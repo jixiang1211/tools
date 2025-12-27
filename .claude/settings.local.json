@@ -25,7 +25,10 @@
       "Bash(python3:*)",
       "Bash(git commit:*)",
       "Bash(ipconfig:*)",
-      "Bash(PORT=9002 node:*)"
+      "Bash(PORT=9002 node:*)",
+      "WebFetch(domain:cloud.tencent.com)",
+      "WebFetch(domain:zhuanlan.zhihu.com)",
+      "Bash(find:*)"
     ]
   }
 }

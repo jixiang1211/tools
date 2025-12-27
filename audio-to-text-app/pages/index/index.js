@@ -66,11 +66,19 @@ Page({
    * 当用户点击"开始录音"按钮时触发
    */
   startRecording() {
+    // 检查是否已在录音
+    if (this.data.isRecording) {
+      return
+    }
+
     // 重置录音数据
     this.setData({
       audioPath: '',
       recordingTime: 0
     })
+
+    // 触觉反馈 - 开始录音
+    wx.vibrateShort({ type: 'light' })
 
     // 调用微信API开始录音
     this.recorder.start({
@@ -116,6 +124,9 @@ Page({
       return // 如果没有在录音，不操作
     }
 
+    // 触觉反馈 - 停止录音
+    wx.vibrateShort({ type: 'light' })
+
     // 调用微信API停止录音
     this.recorder.stop()
 
@@ -147,6 +158,12 @@ Page({
     try {
       this.setData({ isLoading: true })
 
+      // 使用 wx.showLoading 显示加载动画（比 UI 状态指示更明显）
+      wx.showLoading({
+        title: '正在识别...',
+        mask: true
+      })
+
       // 第1步：上传音频，获取 TaskId
       console.log('📤 开始上传音频文件...')
       const taskId = await request.uploadAudio(this.data.audioPath)
@@ -161,6 +178,12 @@ Page({
 
       console.log('✅ 识别完成:', recognizedText)
 
+      // 隐藏加载动画
+      wx.hideLoading()
+
+      // 触觉反馈 - 识别完成
+      wx.vibrateShort({ type: 'light' })
+
       // 处理识别结果：去掉时间戳，只保留文本部分
       // 原格式：[0:0.000,0:1.800]  FRY.
       // 处理后：FRY.
@@ -171,6 +194,9 @@ Page({
         url: `/pages/result/result?text=${encodeURIComponent(cleanText)}`
       })
     } catch (error) {
+      // 隐藏加载动画
+      wx.hideLoading()
+
       // 如果识别失败，显示错误提示
       console.error('❌ 识别失败:', error)
       wx.showToast({

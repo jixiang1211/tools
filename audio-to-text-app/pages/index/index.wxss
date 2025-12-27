@@ -2,164 +2,298 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-/* 标题样式 */
-.title {
-  text-align: center;
-  margin: 30px 0 40px 0;
-}
-
-.title text {
-  font-size: 32px;
-  font-weight: bold;
+  padding: var(--spacing-md);
   color: white;
 }
 
-/* 录音区域 */
+/* ===== 顶部标题区域 ===== */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-lg) var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  text-align: center;
+}
+
+.header .text-title {
+  color: white;
+  font-size: 48rpx;
+  margin-bottom: var(--spacing-sm);
+  text-shadow: 0 2rpx 8rpx rgba(0,0,0,0.2);
+}
+
+.header .text-caption {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 28rpx;
+  letter-spacing: 1rpx;
+}
+
+/* ===== 录音区域 ===== */
 .recording-area {
   flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 40px 0;
+  margin: var(--spacing-xl) 0;
+  position: relative;
 }
 
-/* 正在录音的样式 */
-.recording-info {
+/* 录音进行时的容器 */
+.recording-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  animation: pulse 1.5s ease-in-out infinite;
+  justify-content: center;
+  position: relative;
+  width: 220rpx;
+  height: 220rpx;
 }
 
-.recording-icon {
-  font-size: 80px;
-  margin-bottom: 20px;
+/* 波纹动画 */
+.ripple {
+  position: absolute;
+  border: 2rpx solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: ripple-animation 2s ease-out infinite;
+}
+
+.ripple-1 {
+  width: 220rpx;
+  height: 220rpx;
+  animation-delay: 0s;
+}
+
+.ripple-2 {
+  width: 160rpx;
+  height: 160rpx;
+  animation-delay: 0.5s;
+}
+
+.ripple-3 {
+  width: 100rpx;
+  height: 100rpx;
+  animation-delay: 1s;
+}
+
+@keyframes ripple-animation {
+  0% {
+    width: 100rpx;
+    height: 100rpx;
+    opacity: 1;
+  }
+  100% {
+    width: 260rpx;
+    height: 260rpx;
+    opacity: 0;
+  }
+}
+
+/* 中心录音图标 */
+.recording-icon-wrapper {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: pulse-scale 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-scale {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* 录音状态文字 */
+.recording-text {
+  position: relative;
+  z-index: 3;
+  margin-top: var(--spacing-md);
+  text-align: center;
 }
 
 .recording-text text {
-  font-size: 20px;
+  font-size: 32rpx;
   color: white;
   font-weight: bold;
+  letter-spacing: 2rpx;
 }
 
+/* 计时器显示 */
 .recording-time {
-  margin-top: 20px;
-}
-
-.recording-time text {
-  font-size: 48px;
-  color: white;
-  font-weight: bold;
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: baseline;
+  margin-top: var(--spacing-md);
   font-family: 'Courier New', monospace;
 }
 
-/* 没有录音时的样式 */
+.recording-time text {
+  color: white;
+  font-weight: bold;
+}
+
+.recording-time text:first-child {
+  font-size: 72rpx;
+  letter-spacing: 4rpx;
+}
+
+.time-unit {
+  font-size: 28rpx;
+  margin-left: var(--spacing-xs);
+  opacity: 0.9;
+}
+
+/* 未录音时的样式 */
 .no-recording-info {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
-.icon {
-  font-size: 80px;
-  margin-bottom: 20px;
-  opacity: 0.8;
+.icon-placeholder {
+  margin-bottom: var(--spacing-lg);
+  opacity: 0.6;
 }
 
-.no-recording-info text {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
+.tip-text {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 1rpx;
 }
 
-/* 按钮组 */
+/* ===== 按钮区域 ===== */
 .button-group {
   display: flex;
-  gap: 15px;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.button-row {
+  display: flex;
+  gap: var(--spacing-sm);
 }
 
 .btn {
   flex: 1;
-  height: 50px;
-  border-radius: 10px;
-  font-size: 16px;
-  font-weight: bold;
+  height: 56rpx;
+  border-radius: var(--radius-md);
+  font-size: 32rpx;
+  font-weight: 600;
   color: white;
   border: none;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-md);
 }
 
-.btn-start {
-  background-color: #5ba3f5;
-}
-
-.btn-start:active:not([disabled]) {
-  background-color: #4a94e6;
-}
-
-.btn-stop {
-  background-color: #f56a6a;
-}
-
-.btn-stop:active:not([disabled]) {
-  background-color: #e65555;
+.btn:active:not([disabled]) {
+  transform: translateY(2rpx);
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.15);
 }
 
 .btn[disabled] {
   opacity: 0.5;
-  background-color: #999;
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: none;
 }
 
-/* 识别按钮 */
+/* 开始/停止按钮 */
+.btn-control {
+  background-color: rgba(255, 255, 255, 0.25);
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  font-size: 28rpx;
+}
+
+.btn-control:active:not([disabled]) {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+.btn-start {
+  color: white;
+}
+
+.btn-stop {
+  color: white;
+}
+
+/* 识别按钮 - 使用全局样式 */
 .btn-recognize {
   width: 100%;
-  height: 50px;
-  border-radius: 10px;
-  background-color: #4CAF50;
-  color: white;
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 20px;
+  height: 64rpx;
+  font-size: 36rpx;
+  margin-bottom: var(--spacing-md);
 }
 
-.btn-recognize:active:not([disabled]) {
-  background-color: #45a049;
+/* ===== 状态指示器 ===== */
+.status-indicator {
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 }
 
-.btn-recognize[disabled] {
-  opacity: 0.5;
-  background-color: #999;
-}
-
-/* 状态提示 */
-.tip {
-  text-align: center;
-  padding: 15px;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  min-height: 50px;
+.status-item {
   display: flex;
-  justify-content: center;
   align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-md);
+  border-left: 4rpx solid rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
 }
 
-.tip text {
-  font-size: 14px;
+.status-icon {
+  font-size: 32rpx;
+  font-weight: bold;
+  min-width: 32rpx;
+}
+
+.status-text {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.95);
+  flex: 1;
+}
+
+/* ===== 加载指示器 ===== */
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  margin-top: var(--spacing-md);
+}
+
+.loader {
+  width: 48rpx;
+  height: 48rpx;
+  border: 4rpx solid rgba(255, 255, 255, 0.2);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spinner 1s linear infinite;
+}
+
+@keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-text {
+  font-size: 28rpx;
   color: rgba(255, 255, 255, 0.9);
-}
-
-/* 脉冲动画 */
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
 }

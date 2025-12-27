@@ -259,10 +259,18 @@ router.post('/api/translate-and-speak', async (req, res) => {
     // Step 2: 将翻译结果转换为语音
     // 注意：腾讯云 TTS 不支持粤语作为 primaryLanguage 参数。
     // 粤语需要通过选择粤语音色的 VoiceType 来实现。
-    // 这里先用中文（primaryLanguage=1）进行转换
     console.log('🔄 Step 2: 文本转语音...')
     const primaryLanguage = 1  // 使用中文（腾讯云不支持粤语参数）
-    const audioBuffer = await translationService.textToSpeech(translatedText, voiceType, primaryLanguage)
+
+    // 根据目标语言选择对应的音色 ID
+    // 粤语女声: VoiceType = 101010
+    let selectedVoiceType = voiceType
+    if (language === 'yue') {
+      selectedVoiceType = 101010  // 粤语女声音色 ID
+      console.log('🔄 目标语言是粤语，使用粤语音色 ID:', selectedVoiceType)
+    }
+
+    const audioBuffer = await translationService.textToSpeech(translatedText, selectedVoiceType, primaryLanguage)
     console.log('✅ TTS 完成，音频大小:', audioBuffer.length, '字节')
 
     // 返回音频文件

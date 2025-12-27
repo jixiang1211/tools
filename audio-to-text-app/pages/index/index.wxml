@@ -1,63 +1,97 @@
-<view class="container">
-  <!-- 标题 -->
-  <view class="title">
-    <text>语音转文字</text>
+<view class="container gradient-bg-primary">
+  <!-- 顶部标题区域 -->
+  <view class="header">
+    <text class="text-title">语音转文字</text>
+    <text class="text-caption">快速识别，轻松转换</text>
   </view>
 
-  <!-- 录音显示区域 -->
+  <!-- 录音区域 - 优化设计 -->
   <view class="recording-area">
-    <!-- 如果正在录音，显示录音状态 -->
-    <view wx:if="{{isRecording}}" class="recording-info">
-      <view class="recording-icon">🎙️</view>
+    <!-- 正在录音时 -->
+    <view wx:if="{{isRecording}}" class="recording-container">
+      <!-- 波纹动画背景 -->
+      <view class="ripple ripple-1"></view>
+      <view class="ripple ripple-2"></view>
+      <view class="ripple ripple-3"></view>
+
+      <!-- 中心录音图标 -->
+      <view class="recording-icon-wrapper">
+        <icon type="success_circle" size="80" color="#fff"></icon>
+      </view>
+
+      <!-- 录音状态文字 -->
       <view class="recording-text">
         <text>正在录音</text>
       </view>
+
+      <!-- 计时器显示 -->
       <view class="recording-time">
-        <text>{{recordingTime}}秒</text>
+        <text>{{recordingTime}}</text>
+        <text class="time-unit">秒</text>
       </view>
     </view>
 
-    <!-- 如果没有录音，显示提示信息 -->
+    <!-- 未录音时的提示 -->
     <view wx:else class="no-recording-info">
-      <view class="icon">🎤</view>
-      <text>点击下方按钮开始录音</text>
+      <view class="icon-placeholder">
+        <icon type="success_circle" size="80" color="rgba(255,255,255,0.6)"></icon>
+      </view>
+      <text class="tip-text">点击下方按钮开始录音</text>
     </view>
   </view>
 
-  <!-- 按钮区域 -->
+  <!-- 按钮区域 - 优化布局 -->
   <view class="button-group">
-    <!-- 开始录音按钮 -->
-    <button
-      class="btn btn-start"
-      bindtap="startRecording"
-      disabled="{{isRecording}}"
-    >
-      开始录音
-    </button>
+    <!-- 开始/停止录音按钮组 -->
+    <view class="button-row gap-sm">
+      <button
+        class="btn btn-control btn-start"
+        bindtap="startRecording"
+        disabled="{{isRecording}}"
+      >
+        <text>开始录音</text>
+      </button>
 
-    <!-- 停止录音按钮 -->
+      <button
+        class="btn btn-control btn-stop"
+        bindtap="stopRecording"
+        disabled="{{!isRecording}}"
+      >
+        <text>停止录音</text>
+      </button>
+    </view>
+
+    <!-- 识别按钮 - 主要操作 -->
     <button
-      class="btn btn-stop"
-      bindtap="stopRecording"
-      disabled="{{!isRecording}}"
+      class="btn btn-recognize btn-success"
+      bindtap="recognizeAudio"
+      disabled="{{!audioPath || isLoading}}"
     >
-      停止录音
+      <text>{{isLoading ? '✓ 识别中...' : '识别文字'}}</text>
     </button>
   </view>
 
-  <!-- 识别按钮 -->
-  <button
-    class="btn btn-recognize"
-    bindtap="recognizeAudio"
-    disabled="{{!audioPath || isLoading}}"
-  >
-    {{isLoading ? '识别中...' : '识别文字'}}
-  </button>
+  <!-- 状态指示器 - 优化位置和样式 -->
+  <view class="status-indicator" wx:if="{{!isLoading}}">
+    <view
+      class="status-item"
+      wx:if="{{audioPath}}"
+    >
+      <text class="status-icon status-success">✓</text>
+      <text class="status-text">已录制，点击"识别文字"开始转换</text>
+    </view>
+    <view
+      class="status-item"
+      wx:if="{{!audioPath}}"
+    >
+      <text class="status-icon status-info">!</text>
+      <text class="status-text">请先录制音频</text>
+    </view>
+  </view>
 
-  <!-- 状态提示 -->
-  <view class="tip">
-    <text wx:if="{{audioPath && !isLoading}}">✓ 已录制，点击"识别文字"开始转换</text>
-    <text wx:elif="{{isLoading}}">⏳ 正在识别中，请稍候...</text>
-    <text wx:else>请先录制音频</text>
+  <!-- 加载指示器 -->
+  <view class="loading-indicator" wx:if="{{isLoading}}">
+    <view class="loader"></view>
+    <text class="loader-text">正在识别中，请稍候...</text>
   </view>
 </view>
